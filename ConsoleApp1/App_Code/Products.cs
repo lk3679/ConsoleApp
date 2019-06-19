@@ -18,7 +18,9 @@ namespace ConsoleApp1.App_Code
             {
                 List<Z_MM_QUBE_MATNR> Z_MM_QUBE_MATNR_List = new List<Z_MM_QUBE_MATNR>();
                 ConsoleApp1.RFC.serviceSoapClient ws = new ConsoleApp1.RFC.serviceSoapClient();
-                string StartDate = "20180101";
+                //延長time out時間
+                ws.InnerChannel.OperationTimeout= new TimeSpan(0, 20, 0);
+                string StartDate = "20170101";
                 string EndDate = DateTime.Now.ToString("yyyyMMdd");
 
                 string JsonString = ws.GetAllProducts(StartDate, EndDate);
@@ -47,13 +49,14 @@ namespace ConsoleApp1.App_Code
                     if (dt.Rows.Count > 0)
                     {
 
-                        //作品名稱、媒材中、組件、作品尺寸修改時不可從SAP覆帶到Cube
+                        //作品名稱、組件、作品尺寸修改時不可從SAP覆帶到Cube
                         SqlCommand = "Update Works set " +
                             "AuthorsNo=@AuthorsNo," +
                             "Cost=@Cost," +
                             "Purchase=@Purchase," +
                             "Currency=@Currency," +
                             "GenreName=@GenreName," +
+                            "Material=@Material,"+
                             "ZZPAGE=@ZZPAGE," +
                             "WorkSize=@WorkSize," +
                             "ChangeState='Update', " +

@@ -18,7 +18,8 @@ namespace ConsoleApp1.App_Code
             {
                 List<Z_MM_QUBE_VKP0> Z_MM_QUBE_VKP0_List = new List<Z_MM_QUBE_VKP0>();
                 ConsoleApp1.RFC.serviceSoapClient ws = new ConsoleApp1.RFC.serviceSoapClient();
-
+                //延長time out時間
+                ws.InnerChannel.OperationTimeout = new TimeSpan(0, 20, 0);
                 string P_DATE = DateTime.Now.ToString("yyyyMMdd");
                 string JsonString = ws.GetAllPrice(P_DATE);
                 Z_MM_QUBE_VKP0_List = JsonConvert.DeserializeObject<List<Z_MM_QUBE_VKP0>>(JsonString);

@@ -23,7 +23,7 @@ namespace ConsoleApp1
             //Products.Update();
 
             //更新庫存數量
-            //Stocks.Update();
+            Stocks.Update();
 
             //更新販售價格
             //Prices.Update();

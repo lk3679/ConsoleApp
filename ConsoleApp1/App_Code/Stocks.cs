@@ -18,9 +18,13 @@ namespace ConsoleApp1.App_Code
             {
                 List<Z_MM_QUBE_MENGE> Z_MM_QUBE_MENGE_List = new List<Z_MM_QUBE_MENGE>();
                 ConsoleApp1.RFC.serviceSoapClient ws = new ConsoleApp1.RFC.serviceSoapClient();
+                //延長time out時間
+                ws.InnerChannel.OperationTimeout = new TimeSpan(0, 20, 0);
                 string P_DATE = DateTime.Now.ToString("yyyyMMdd");
                 string JsonString = ws.GetAllStock(P_DATE);
                 Z_MM_QUBE_MENGE_List = JsonConvert.DeserializeObject<List<Z_MM_QUBE_MENGE>>(JsonString);
+                Dictionary<string, object> empty = new Dictionary<string, object>();
+                DB.ExecuteNonQuery("Delete From WorksStocks", empty);
 
                 foreach (var item in Z_MM_QUBE_MENGE_List)
                 {
@@ -32,18 +36,20 @@ namespace ConsoleApp1.App_Code
                     param.Add("WERKS", item.WERKS);
                     param.Add("MENGE", Double.Parse(item.MENGE));
 
-                    dt = DB.DBQuery("SELECT * from WorksStocks where MaterialsID=@MaterialsID and WERKS=@WERKS ", param);
+                    //dt = DB.DBQuery(" SELECT * from WorksStocks where MaterialsID=@MaterialsID and WERKS=@WERKS ", param);
+                    //if (dt.Rows.Count > 0)
+                    //{
+                    //    SqlCommand = "UPDATE WorksStocks set MENGE=@MENGE,ModifyDate=GetDate()  where MaterialsID=@MaterialsID and WERKS=@WERKS; ";
+                    //    ExcuteResult = string.Format("更新庫存數：{0}_{1}", item.MATNR, item.WERKS);
+                    //}
+                    //else
+                    //{
+                    //    SqlCommand = "Insert Into WorksStocks (MaterialsID,WERKS,MENGE,CreateDate) VALUES (@MaterialsID,@WERKS,@MENGE,GetDate()); ";
+                    //    ExcuteResult = string.Format("新增庫存數：{0}_{1}", item.MATNR, item.WERKS);
+                    //}
 
-                    if (dt.Rows.Count > 0)
-                    {
-                        SqlCommand = "UPDATE WorksStocks set MENGE=@MENGE,ModifyDate=GetDate()  where MaterialsID=@MaterialsID and WERKS=@WERKS; ";
-                        ExcuteResult = string.Format("更新庫存數：{0}_{1}", item.MATNR, item.WERKS);
-                    }
-                    else
-                    {
-                        SqlCommand = "Insert Into WorksStocks (MaterialsID,WERKS,MENGE,CreateDate) VALUES (@MaterialsID,@WERKS,@MENGE,GetDate()); ";
-                        ExcuteResult = string.Format("新增庫存數：{0}_{1}", item.MATNR, item.WERKS);
-                    }
+                    SqlCommand = "Insert Into WorksStocks (MaterialsID,WERKS,MENGE,CreateDate) VALUES (@MaterialsID,@WERKS,@MENGE,GetDate()); ";
+                    ExcuteResult = string.Format("新增庫存數：{0}_{1}", item.MATNR, item.WERKS);
 
                     //更新該商品的庫存總數
                     SqlCommand += "UPDATE works set TotalInventory=(SELECT isnull(sum(MENGE),0) FROM [dbo].[WorksStocks] where MaterialsID=@MaterialsID)  ";

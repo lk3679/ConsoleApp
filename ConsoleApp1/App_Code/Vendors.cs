@@ -18,6 +18,8 @@ namespace ConsoleApp1.App_Code
 
                 List<Z_MM_QUBE_LIFNR> Z_MM_QUBE_LIFNR_List = new List<Z_MM_QUBE_LIFNR>();
                 ConsoleApp1.RFC.serviceSoapClient ws = new ConsoleApp1.RFC.serviceSoapClient();
+                //延長time out時間
+                ws.InnerChannel.OperationTimeout = new TimeSpan(0, 20, 0);
                 string StartDate = "20160101";
                 string EndDate = DateTime.Now.ToString("yyyyMMdd");
                 string JsonString = ws.GetAllVendors(StartDate, EndDate);

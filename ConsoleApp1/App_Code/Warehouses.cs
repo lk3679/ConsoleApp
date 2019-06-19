@@ -18,8 +18,9 @@ namespace ConsoleApp1.App_Code
 
                 List<Z_MM_QUBE_WERKS> Z_MM_QUBE_WERKS_List = new List<Z_MM_QUBE_WERKS>();
                 ConsoleApp1.RFC.serviceSoapClient ws = new ConsoleApp1.RFC.serviceSoapClient();
+                //延長time out時間
+                ws.InnerChannel.OperationTimeout = new TimeSpan(0, 20, 0);
                 string JsonString = ws.GetAllWarehouses();
-
                 if (string.IsNullOrEmpty(JsonString) == false)
                 {
                     string SqlCommand = " ";
